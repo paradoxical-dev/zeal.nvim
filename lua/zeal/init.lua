@@ -10,11 +10,29 @@ M.default_config = {
 	toggleterm = {
 		direction = "vertical",
 		split_size = vim.o.columns * 0.5, -- size when direction != float
+		toggle_map = "<M-h>", -- TODO: add toggle map for tt
+	},
+	ft_map = { -- TODO: add multi search by ft?
+		js = "javascript",
 	},
 }
 
 function M.setup(opts)
 	M.config = vim.tbl_deep_extend("force", M.default_config, opts or {})
+	if M.config.use_toggleterm then
+		vim.api.nvim_set_keymap(
+			"n",
+			M.config.toggleterm.toggle_map,
+			"<cmd>ZealToggle<CR>",
+			{ noremap = false, silent = true }
+		)
+		vim.api.nvim_set_keymap(
+			"t",
+			M.config.toggleterm.toggle_map,
+			"<cmd>ZealToggle<CR>",
+			{ noremap = true, silent = true }
+		)
+	end
 end
 
 function M.search(docset_name)
@@ -39,5 +57,9 @@ end, {
 	nargs = "?",
 	desc = "Search Zeal docsets",
 })
+
+vim.api.nvim_create_user_command("ZealToggle", function()
+	require("zeal.browser").toggle()
+end, { desc = "Toggle Zeal term" })
 
 return M
