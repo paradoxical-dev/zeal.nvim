@@ -13,8 +13,12 @@ Query and open Zeal docsets without leaving Neovim.
 ### Optional
 
 - snacks.nvim (for picker)
+- toggleterm (`:term` will be used otherwise)
 
 > [!note]
 > If opting not to use snacks, the standard `vim.ui.select()` function will be used
 > 
 > If this is true, a helper plugin like dressing.nvim is recommended
+
+# Usage
+

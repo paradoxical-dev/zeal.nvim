@@ -1,9 +1,16 @@
 local M = {}
 
 M.default_config = {
-	docsets_path = vim.fn.expand("~/.local/share/Zeal/Zeal/docsets"),
-	browser = "lynx",
-	split = "vsplit",
+	docsets_path = vim.fn.expand("~/.local/share/Zeal/Zeal/docsets"), -- zeal docset locations
+	browser = "w3m", -- can be any terminal browser
+	split = "vsplit", -- used when use_toggleterm = false
+	use_toggleterm = false,
+	-- toggleterm specifc options
+	-- see https://github.com/akinsho/toggleterm.nvim/tree/main
+	toggleterm = {
+		direction = "right",
+		split_size = vim.o.columns * 0.5, -- size when direction != float
+	},
 }
 
 function M.setup(opts)
