@@ -13,7 +13,7 @@ function M.open(entry, cfg)
 		t:toggle()
 
 		if cfg.toggleterm.direction == ("vertical" or "horizontal") then
-			t:resize(math.floor(vim.o.columns * 0.5))
+			t:resize(cfg.toggleterm.split_size)
 		end
 		return
 	end

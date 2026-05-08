@@ -8,7 +8,7 @@ M.default_config = {
 	-- toggleterm specifc options
 	-- see https://github.com/akinsho/toggleterm.nvim/tree/main
 	toggleterm = {
-		direction = "right",
+		direction = "vertical",
 		split_size = vim.o.columns * 0.5, -- size when direction != float
 	},
 }
