@@ -2,7 +2,8 @@
 
 Query and open Zeal docsets without leaving Neovim.
 
-<image here>
+![Search](https://i.imgur.com/NMgdSOh.png)
+![Term](https://i.imgur.com/y2STYrK.png)
 
 # Requirements
 
@@ -26,11 +27,11 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim)
 
 ```lua
 {
-    "paradoxical-dev/zeal.nvim",
-    event = "VeryLazy",
-    opts = {
-      -- config here
-    }
+  "paradoxical-dev/zeal.nvim",
+  event = "VeryLazy",
+  opts = {
+    -- config here
+  }
 }
 ```
 
@@ -81,8 +82,7 @@ Lazy:
 ```lua
 {
   {
-  	dir = "~/Projects/zeal.nvim",
-  	-- "paradoxical-dev/zeal.nvim",
+  	"paradoxical-dev/zeal.nvim",
   	lazy = false,
   	keys = {
   	  {

@@ -53,10 +53,6 @@ function M.entries(docset)
 		local entry_name, path = line:match("^(.-)|(.+)$")
 		if entry_name and path then
 			-- strip path metadata?
-			-- path = path:gsub("^%b<>+", "")
-			-- print("bytes:", path:byte(1), path:byte(2), path:byte(3))
-			-- local filepath = path:match("^([^#]+)")
-
 			-- local stripped = path:match(">([^>]+)$") or path
 			local stripped = path:match("^.*>(.+)$") or path
 			-- local filepath = stripped:match("^([^#]+)")
