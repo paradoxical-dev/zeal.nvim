@@ -52,9 +52,18 @@ function M.entries(docset)
 	for _, line in ipairs(raw) do
 		local entry_name, path = line:match("^(.-)|(.+)$")
 		if entry_name and path then
+			-- strip path metadata?
+			-- path = path:gsub("^%b<>+", "")
+			-- print("bytes:", path:byte(1), path:byte(2), path:byte(3))
+			-- local filepath = path:match("^([^#]+)")
+
+			local stripped = path:match(">([^>]+)$") or path
+			stripped = path:match("^.*>(.+)$") or path
+			local filepath = stripped:match("^([^#]+)")
+
 			table.insert(entries, {
 				display = entry_name,
-				path = docset.path .. "/Contents/Resources/Documents/" .. path:match("^([^#]+)"),
+				path = docset.path .. "/Contents/Resources/Documents/" .. filepath,
 			})
 		end
 	end
