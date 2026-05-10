@@ -65,15 +65,21 @@ local function download_lang(cfg, language)
 			end
 
 			local dest = docsets_path .. "/" .. language .. ".docset"
-			vim.system({ "mv", src, dest }, {}, function(mv_result)
-				vim.schedule(function()
-					if mv_result.code ~= 0 then
-						vim.notify("zeal.nvim: move failed: " .. mv_result.stderr, vim.log.levels.ERROR)
+			vim.schedule(function()
+				-- remove existing docset so cp -r doesn't nest inside it
+				if vim.uv.fs_stat(dest) then
+					vim.fn.delete(dest, "rf")
+				end
+				vim.system({ "cp", "-r", src, dest }, {}, function(cp_result)
+					vim.schedule(function()
+						if cp_result.code ~= 0 then
+							vim.notify("zeal.nvim: copy failed: " .. cp_result.stderr, vim.log.levels.ERROR)
+							cleanup()
+							return
+						end
+						vim.notify("zeal.nvim: installed " .. language, vim.log.levels.INFO)
 						cleanup()
-						return
-					end
-					vim.notify("zeal.nvim: installed " .. language, vim.log.levels.INFO)
-					cleanup()
+					end)
 				end)
 			end)
 		end)
@@ -81,7 +87,7 @@ local function download_lang(cfg, language)
 end
 
 ---@param cfg table
-function M.fetch_index(cfg)
+function M.download(cfg)
 	local index_url = "https://api.zealdocs.org/v1/docsets"
 	local cache_ttl = 24 * 60 * 60 -- 24 hours
 

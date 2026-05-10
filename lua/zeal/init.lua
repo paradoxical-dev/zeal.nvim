@@ -89,7 +89,7 @@ vim.api.nvim_create_user_command("ZealSearchFt", function()
 end, { desc = "Search Zeal docsets for filetype" })
 
 vim.api.nvim_create_user_command("ZealDownload", function()
-	require("zeal.download").fetch_index(M.config)
+	require("zeal.download").download(M.config)
 end, { desc = "Download Zeal docsets" })
 
 return M
