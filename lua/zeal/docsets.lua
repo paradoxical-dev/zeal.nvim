@@ -45,21 +45,26 @@ end
 ---@return table
 function M.entries(docset)
 	local db = docset.path .. "/Contents/Resources/docSet.dsidx"
-	local raw =
-		vim.fn.systemlist(string.format("sqlite3 '%s' \"SELECT name, path FROM searchIndex ORDER BY name\"", db))
+	local raw = vim.fn.systemlist(
+		string.format("sqlite3 '%s' \"SELECT name, path, fragment FROM searchIndex ORDER BY name\"", db)
+	)
 	local entries = {}
 
 	for _, line in ipairs(raw) do
-		local entry_name, path = line:match("^(.-)|(.+)$")
+		local entry_name, path, fragment = line:match("^(.-)|(.-)|(.*)$")
 		if entry_name and path then
 			-- strip path metadata?
 			-- local stripped = path:match(">([^>]+)$") or path
 			local stripped = path:match("^.*>(.+)$") or path
 			-- local filepath = stripped:match("^([^#]+)")
+			local full_path = docset.path .. "/Contents/Resources/Documents/" .. stripped
+			if fragment and fragment ~= "" then
+				full_path = full_path .. "#" .. fragment
+			end
 
 			table.insert(entries, {
 				display = entry_name,
-				path = docset.path .. "/Contents/Resources/Documents/" .. stripped,
+				path = full_path,
 			})
 		end
 	end
