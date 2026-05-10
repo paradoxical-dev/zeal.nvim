@@ -3,6 +3,39 @@ local M = {}
 local cache_dir = vim.fn.stdpath("cache") .. "/zeal-docsets"
 local cache_path = cache_dir .. "/index.json"
 
+---Recursively copy a directory using vim.uv
+---@param src string
+---@param dest string
+---@return boolean ok, string? err
+local function copy_dir(src, dest)
+	local ok, err = vim.uv.fs_mkdir(dest, 493) -- 0755
+	if not ok then
+		return false, "failed to create dir " .. dest .. ": " .. (err or "")
+	end
+	local handle = vim.uv.fs_scandir(src)
+	if not handle then
+		return false, "failed to scan " .. src
+	end
+	while true do
+		local name, type = vim.uv.fs_scandir_next(handle)
+		if not name then
+			break
+		end
+		if type == "directory" then
+			local ok2, err2 = copy_dir(src .. "/" .. name, dest .. "/" .. name)
+			if not ok2 then
+				return false, err2
+			end
+		else
+			local ok3, err3 = vim.uv.fs_copyfile(src .. "/" .. name, dest .. "/" .. name)
+			if not ok3 then
+				return false, "failed to copy " .. name .. ": " .. (err3 or "")
+			end
+		end
+	end
+	return true
+end
+
 ---@param cfg table
 ---@param language string
 local function download_lang(cfg, language)
@@ -64,24 +97,20 @@ local function download_lang(cfg, language)
 				return
 			end
 
-			local docset_name = src:match("([^/]+)$")
-			local dest = docsets_path .. "/" .. docset_name
+			local dest = docsets_path .. "/" .. language .. ".docset"
 			vim.schedule(function()
-				-- remove existing docset so cp -r doesn't nest inside it
+				-- remove existing docset so copy doesn't nest inside it
 				if vim.uv.fs_stat(dest) then
 					vim.fn.delete(dest, "rf")
 				end
-				vim.system({ "cp", "-r", src, dest }, {}, function(cp_result)
-					vim.schedule(function()
-						if cp_result.code ~= 0 then
-							vim.notify("zeal.nvim: copy failed: " .. cp_result.stderr, vim.log.levels.ERROR)
-							cleanup()
-							return
-						end
-						vim.notify("zeal.nvim: installed " .. language, vim.log.levels.INFO)
-						cleanup()
-					end)
-				end)
+				local ok, err = copy_dir(src, dest)
+				if not ok then
+					vim.notify("zeal.nvim: copy failed: " .. (err or "unknown error"), vim.log.levels.ERROR)
+					cleanup()
+					return
+				end
+				vim.notify("zeal.nvim: installed " .. language, vim.log.levels.INFO)
+				cleanup()
 			end)
 		end)
 	end)
