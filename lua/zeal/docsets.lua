@@ -45,28 +45,39 @@ end
 ---@return table
 function M.entries(docset)
 	local db = docset.path .. "/Contents/Resources/docSet.dsidx"
-	local raw = vim.fn.systemlist(
-		string.format("sqlite3 '%s' \"SELECT name, path, fragment FROM searchIndex ORDER BY name\"", db)
-	)
-	local entries = {}
 
-	for _, line in ipairs(raw) do
-		local entry_name, path, fragment = line:match("^(.-)|(.-)|(.*)$")
-		if entry_name and path then
-			-- strip path metadata?
-			-- local stripped = path:match(">([^>]+)$") or path
-			local stripped = path:match("^.*>(.+)$") or path
-			-- local filepath = stripped:match("^([^#]+)")
-			local full_path = docset.path .. "/Contents/Resources/Documents/" .. stripped
-			if fragment and fragment ~= "" then
-				full_path = full_path .. "#" .. fragment
-			end
-
-			table.insert(entries, {
-				display = entry_name,
-				path = full_path,
-			})
+	local result = vim.system({
+		"sqlite3", "-json", db,
+		"SELECT name, path, fragment FROM searchIndex ORDER BY name",
+	}, { text = true }):wait()
+	if result.code ~= 0 then
+		result = vim.system({
+			"sqlite3", "-json", db,
+			"SELECT name, path FROM searchIndex ORDER BY name",
+		}, { text = true }):wait()
+		if result.code ~= 0 then
+			vim.notify("zeal.nvim: sqlite error: " .. result.stderr, vim.log.levels.ERROR)
+			return {}
 		end
+	end
+
+
+	local entries = {}
+	local rows = vim.json.decode(result.stdout, { luanil = { object = true, array = true } })
+	for _, row in ipairs(rows) do
+		-- strip path metadata?
+		-- local stripped = row.path:match(">([^>]+)$") or row.path
+		local stripped = row.path:match("^.*>(.+)$") or row.path
+		-- local filepath = stripped:match("^([^#]+)")
+		local full_path = docset.path .. "/Contents/Resources/Documents/" .. stripped
+		if row.fragment and row.fragment ~= "" then
+			full_path = full_path .. "#" .. row.fragment
+		end
+
+		table.insert(entries, {
+			display = row.name,
+			path = full_path,
+		})
 	end
 	return entries
 end
