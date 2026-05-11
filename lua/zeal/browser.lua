@@ -29,6 +29,9 @@ function M.open(entry, cfg)
 		close_on_exit = true,
 		direction = cfg.toggleterm.direction,
 		display_name = "Zeal Term",
+		on_open = function(term)
+			vim.bo[term.bufnr].filetype = ZEAL_FILETYPE
+		end,
 		on_stderr = function(_, job, err, name)
 			local e = ""
 			for line in pairs(err) do
