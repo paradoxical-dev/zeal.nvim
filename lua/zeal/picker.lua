@@ -13,7 +13,7 @@ function M.pick_entry(docset, cfg)
 
 	if cfg.picker.type == "default" then
 		vim.ui.select(entries, {
-			prompt = "Zeal [" .. docset.name .. "]",
+			prompt = "Zeal [" .. docset.name .. "]:",
 			format_item = function(e)
 				return e.display
 			end,
@@ -62,7 +62,7 @@ function M.pick_entry_for_ft(docset_names, ft, cfg)
 
 	if cfg.picker.type == "default" then
 		vim.ui.select(entries, {
-			prompt = "Zeal [" .. ft .. "]",
+			prompt = "Zeal [" .. ft .. "]:",
 			format_item = function(e)
 				return e.display
 			end,
@@ -114,7 +114,7 @@ function M.pick_docset(cfg)
 
 	if cfg.picker.type == "default" then
 		vim.ui.select(all, {
-			prompt = "Zeal docsets",
+			prompt = "Zeal docsets:",
 			format_item = function(d)
 				return d.name
 			end,
