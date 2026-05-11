@@ -20,6 +20,18 @@ function M.open(entry, cfg)
 		else
 			vim.fn.termopen({ cfg.browser, entry.path })
 		end
+
+		-- automatically close the terminal window unless there was an error
+		vim.api.nvim_create_autocmd('TermClose', {
+			buffer = buf,
+			callback = function(ev)
+				if vim.v.event.status ~= 0 then
+					return
+				end
+				vim.api.nvim_buf_delete(ev.buf, { force = true })
+			end,
+		})
+
 		vim.cmd("startinsert")
 		return
 	end
