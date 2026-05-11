@@ -15,7 +15,11 @@ function M.open(entry, cfg)
 		vim.cmd(cfg.split)
 		local buf = vim.api.nvim_create_buf(false, true)
 		vim.api.nvim_set_current_buf(buf)
-		vim.fn.termopen({ cfg.browser, entry.path })
+		if vim.fn.has('nvim-0.11') == 1 then
+			vim.fn.jobstart({ cfg.browser, entry.path }, { term = true })
+		else
+			vim.fn.termopen({ cfg.browser, entry.path })
+		end
 		vim.cmd("startinsert")
 		return
 	end
