@@ -5,7 +5,7 @@ M.default_config = {
 	browser = "w3m", -- can be any terminal browser
 	split = "vsplit", -- used when use_toggleterm = false
 	use_toggleterm = false,
-	-- toggleterm specifc options
+	-- toggleterm specific options
 	-- see https://github.com/akinsho/toggleterm.nvim/tree/main
 	toggleterm = {
 		direction = "vertical",
@@ -87,5 +87,9 @@ end, { desc = "Toggle Zeal term" })
 vim.api.nvim_create_user_command("ZealSearchFt", function()
 	require("zeal").search_ft()
 end, { desc = "Search Zeal docsets for filetype" })
+
+vim.api.nvim_create_user_command("ZealDownload", function()
+	require("zeal.download").download(M.config)
+end, { desc = "Download Zeal docsets" })
 
 return M

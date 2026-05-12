@@ -45,6 +45,31 @@ end
 ---@return table
 function M.entries(docset)
 	local db = docset.path .. "/Contents/Resources/docSet.dsidx"
+
+	-- docsets downloaded outside of the Zeal UI (e.g. from this plugin)
+	-- are missing the searchIndex table
+	-- SQL below is based on what Zeal does, see
+	-- https://github.com/zealdocs/zeal/blob/main/src/libs/registry/docset.cpp#L621
+	local has_index = vim.fn.systemlist(
+		string.format(
+			"sqlite3 '%s' \"SELECT name FROM sqlite_master WHERE type IN ('table','view') AND name='searchIndex'\"",
+			db
+		)
+	)
+	if #has_index == 0 then
+		vim.fn.systemlist(
+			string.format(
+				"sqlite3 '%s' \"CREATE VIEW IF NOT EXISTS searchIndex AS"
+					.. " SELECT ztokenname AS name, ztypename AS type, zpath AS path, zanchor AS fragment"
+					.. " FROM ztoken"
+					.. " INNER JOIN ztokenmetainformation ON ztoken.zmetainformation = ztokenmetainformation.z_pk"
+					.. " INNER JOIN zfilepath ON ztokenmetainformation.zfile = zfilepath.z_pk"
+					.. ' INNER JOIN ztokentype ON ztoken.ztokentype = ztokentype.z_pk"',
+				db
+			)
+		)
+	end
+
 	local raw = vim.fn.systemlist(
 		string.format("sqlite3 '%s' \"SELECT name, path, fragment FROM searchIndex ORDER BY name\"", db)
 	)

@@ -8,7 +8,8 @@ Query and open Zeal docsets without leaving Neovim.
 # Requirements
 
 - sqlite3
-- [Zeal](https://zealdocs.org/) (docsets should be downloaded from the Zeal gui)
+- curl
+- [Zeal](https://zealdocs.org/)
 - lynx, w3m or any other terminal browser
 
 ## Optional Dependencies
@@ -135,7 +136,14 @@ Toggles the last opened zeal terminal
 
 ### `:ZealSearchFt`
 
-Searches docsets specified in the `ft_map` confugration option
+Searches docsets specified in the `ft_map` configuration option
+
+### `:ZealDownload`
+
+Opens a picker to browse and download docsets from the [Zeal docset registry](https://zealdocs.org/download.html). The registry index is cached locally for 24 hours. Downloaded docsets are installed directly to `docsets_path` and can be used immediately without restarting Neovim.
+
+> [!note]
+> Docsets can also be downloaded from the Zeal GUI as usual — both sources are supported
 
 ## Functions
 
@@ -146,4 +154,8 @@ Same as the `:Zeal` command
 ### `require("zeal").search_ft()`
 
 Same as `:ZealSearchFt`
+
+### `require("zeal.download").download(cfg)`
+
+Same as `:ZealDownload`
 

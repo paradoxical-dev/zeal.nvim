@@ -114,7 +114,7 @@ function M.pick_docset(cfg)
 
 	if cfg.picker.type == "default" then
 		vim.ui.select(all, {
-			prompt = "Zeal docsets:",
+			prompt = "Zeal Docsets:",
 			format_item = function(d)
 				return d.name
 			end,
@@ -146,6 +146,51 @@ function M.pick_docset(cfg)
 		confirm = function(picker, choice)
 			picker:close()
 			M.pick_entry(choice, cfg)
+		end,
+		preview = "none",
+	})
+end
+
+---@param languages table[]
+---@param cfg table
+---@param callback function
+function M.pick_download(languages, cfg, callback)
+	if cfg.picker.type == "default" then
+		vim.ui.select(languages, {
+			prompt = "Zeal Docsets",
+			format_item = function(e)
+				return e.name
+			end,
+		}, function(choice)
+			if choice then
+				callback(cfg, choice.name)
+			end
+		end)
+		return
+	end
+
+	local picker_cfg = cfg.picker.snacks
+	local snacks = require("snacks")
+	local items = {}
+
+	for _, e in ipairs(languages) do
+		table.insert(items, { text = e.name, name = e.name })
+	end
+
+	snacks.picker({
+		items = items,
+		format = function(e)
+			return {
+				{ e.text, "SnacksPickerFile" },
+			}
+		end,
+		layout = picker_cfg.layout,
+		title = "  Zeal Docsets",
+		confirm = function(picker, choice)
+			picker:close()
+			if choice then
+				callback(cfg, choice.name)
+			end
 		end,
 		preview = "none",
 	})
