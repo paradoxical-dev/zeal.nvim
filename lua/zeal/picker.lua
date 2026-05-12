@@ -157,7 +157,7 @@ end
 function M.pick_download(languages, cfg, callback)
 	if cfg.picker.type == "default" then
 		vim.ui.select(languages, {
-			prompt = "Zeal Docsets",
+			prompt = "Zeal Docsets:",
 			format_item = function(e)
 				return e.name
 			end,

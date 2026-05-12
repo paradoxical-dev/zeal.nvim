@@ -41,66 +41,74 @@ function M.find(name, cfg)
 	end
 end
 
----@param docset table
----@return table
-function M.entries(docset)
-	local db = docset.path .. "/Contents/Resources/docSet.dsidx"
-
-	-- docsets downloaded outside of the Zeal UI (e.g. from this plugin)
-	-- are missing the searchIndex table
-	-- SQL below is based on what Zeal does, see
-	-- https://github.com/zealdocs/zeal/blob/main/src/libs/registry/docset.cpp#L621
-	local has_index = vim.system({
+local function ensure_index(db)
+	-- docsets downloaded outside of the Zeal UI (e.g. from this plugin) are
+	-- missing the searchIndex table
+	local has_index_res = vim.system({
 		"sqlite3",
-		"-json",
 		db,
 		"SELECT name FROM sqlite_master WHERE type IN ('table','view') AND name='searchIndex'",
 	}, { text = true }):wait()
 
-	if has_index.code == 0 then
-		local rows = vim.json.decode(has_index.stdout, { luanil = { object = true, array = true } })
-		if not rows or #rows == 0 then
-			vim.system({
-				"sqlite3",
-				db,
-				"CREATE VIEW IF NOT EXISTS searchIndex AS"
-					.. " SELECT ztokenname AS name, ztypename AS type, zpath AS path, zanchor AS fragment"
-					.. " FROM ztoken"
-					.. " INNER JOIN ztokenmetainformation ON ztoken.zmetainformation = ztokenmetainformation.z_pk"
-					.. " INNER JOIN zfilepath ON ztokenmetainformation.zfile = zfilepath.z_pk"
-					.. ' INNER JOIN ztokentype ON ztoken.ztokentype = ztokentype.z_pk"',
-			}, { text = true }):wait()
-		end
+	if has_index_res.code ~= 0 then
+		vim.notify("zeal.nvim: sqlite error: " .. has_index_res.stderr, vim.log.levels.ERROR)
+		return
 	end
 
-	-- local raw = vim.fn.systemlist(
-	-- 	string.format("sqlite3 '%s' \"SELECT name, path, fragment FROM searchIndex ORDER BY name\"", db)
-	-- )
+	if vim.trim(has_index_res.stdout) ~= "" then
+		-- searchIndex table exists, nothing to do
+		return
+	end
 
-	local result = vim.system({
+	-- SQL below is based on what Zeal does, see
+	-- https://github.com/zealdocs/zeal/blob/b03c28bb9be518dc432ae585beb78a3838f63d7f/src/libs/registry/docset.cpp#L621
+	local create_res = vim.system({
+		"sqlite3",
+		db,
+		"CREATE VIEW IF NOT EXISTS searchIndex AS"
+			.. " SELECT ztokenname AS name, ztypename AS type, zpath AS path, zanchor AS fragment"
+			.. " FROM ztoken"
+			.. " INNER JOIN ztokenmetainformation ON ztoken.zmetainformation = ztokenmetainformation.z_pk"
+			.. " INNER JOIN zfilepath ON ztokenmetainformation.zfile = zfilepath.z_pk"
+			.. " INNER JOIN ztokentype ON ztoken.ztokentype = ztokentype.z_pk",
+	}, { text = true }):wait()
+
+	if create_res.code ~= 0 then
+		vim.notify("zeal.nvim: sqlite error: " .. create_res.stderr, vim.log.levels.ERROR)
+		return
+	end
+end
+
+---@param docset table
+---@return table
+function M.entries(docset)
+	local db = docset.path .. "/Contents/Resources/docSet.dsidx"
+	ensure_index(db)
+
+	local entries_res = vim.system({
 		"sqlite3",
 		"-json",
 		db,
 		"SELECT name, path, fragment FROM searchIndex ORDER BY name",
 	}, { text = true }):wait()
 
-	if result.code ~= 0 then
+	if entries_res.code ~= 0 then
 		-- add fallback for docsets wo fragment
-		result = vim.system({
+		entries_res = vim.system({
 			"sqlite3",
 			"-json",
 			db,
 			"SELECT name, path FROM searchIndex ORDER BY name",
 		}, { text = true }):wait()
 
-		if result.code ~= 0 then
-			vim.notify("zeal.nvim: sqlite error: " .. result.stderr, vim.log.levels.ERROR)
+		if entries_res.code ~= 0 then
+			vim.notify("zeal.nvim: sqlite error: " .. entries_res.stderr, vim.log.levels.ERROR)
 			return {}
 		end
 	end
 
 	local entries = {}
-	local rows = vim.json.decode(result.stdout, { luanil = { object = true, array = true } })
+	local rows = vim.json.decode(entries_res.stdout, { luanil = { object = true, array = true } })
 
 	for _, row in ipairs(rows) do
 		-- strip path metadata?
