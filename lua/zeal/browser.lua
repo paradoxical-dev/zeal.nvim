@@ -1,5 +1,7 @@
 local M = {}
 
+local ZEAL_FILETYPE = "zeal"
+
 M.current = false
 M.term = nil
 
@@ -14,8 +16,25 @@ function M.open(entry, cfg)
 	if not cfg.use_toggleterm then
 		vim.cmd(cfg.split)
 		local buf = vim.api.nvim_create_buf(false, true)
+		vim.api.nvim_buf_set_option(buf, "filetype", ZEAL_FILETYPE)
 		vim.api.nvim_set_current_buf(buf)
-		vim.fn.termopen({ cfg.browser, entry.path })
+		if vim.fn.has('nvim-0.11') == 1 then
+			vim.fn.jobstart({ cfg.browser, entry.path }, { term = true })
+		else
+			vim.fn.termopen({ cfg.browser, entry.path })
+		end
+
+		-- automatically close the terminal window unless there was an error
+		vim.api.nvim_create_autocmd('TermClose', {
+			buffer = buf,
+			callback = function(ev)
+				if vim.v.event.status ~= 0 then
+					return
+				end
+				vim.api.nvim_buf_delete(ev.buf, { force = true })
+			end,
+		})
+
 		vim.cmd("startinsert")
 		return
 	end
@@ -26,6 +45,9 @@ function M.open(entry, cfg)
 		close_on_exit = true,
 		direction = cfg.toggleterm.direction,
 		display_name = "Zeal Term",
+		on_open = function(term)
+			vim.bo[term.bufnr].filetype = ZEAL_FILETYPE
+		end,
 		on_stderr = function(_, job, err, name)
 			local e = ""
 			for line in pairs(err) do
