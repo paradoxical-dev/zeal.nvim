@@ -11,10 +11,10 @@ local function entry_picker(entries, title, query)
 	end
 
 	if active_picker == "default" then
-		require("picker.default").entry_picker(entries, title, query)
+		require("zeal.picker.default").entry_picker(entries, title, query)
 		return
 	elseif active_picker == "snacks" then
-		require("picker.snacks").entry_picker(entries, title, query)
+		require("zeal.picker.snacks").entry_picker(entries, title, query)
 		return
 	end
 end
@@ -50,10 +50,10 @@ local function pick_docsets(on_choice)
 	end
 
 	if active_picker == "default" then
-		require("picker.default").pick_docsets(all, on_choice)
+		require("zeal.picker.default").pick_docsets(all, on_choice)
 		return
 	elseif active_picker == "snacks" then
-		require("picker.snacks").pick_docsets(all, on_choice)
+		require("zeal.picker.snacks").pick_docsets(all, on_choice)
 		return
 	end
 end
@@ -68,10 +68,10 @@ end
 function M.pick_download(languages, callback)
 	local active_picker = require("zeal").config.picker.type
 	if active_picker == "default" then
-		require("picker.default").pick_download(languages, callback)
+		require("zeal.picker.default").pick_download(languages, callback)
 		return
 	elseif active_picker == "snacks" then
-		require("picker.snacks").pick_download(languages, callback)
+		require("zeal.picker.snacks").pick_download(languages, callback)
 	end
 end
 
@@ -97,10 +97,10 @@ end
 function M.pick_manager()
 	local active_picker = require("zeal").config.picker.type
 	if active_picker == "default" then
-		require("picker.default").pick_manager()
+		require("zeal.picker.default").pick_manager()
 		return
 	elseif active_picker == "snacks" then
-		require("picker.snacks").pick_manager()
+		require("zeal.picker.snacks").pick_manager()
 		return
 	end
 end
