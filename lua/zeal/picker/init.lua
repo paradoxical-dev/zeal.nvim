@@ -21,7 +21,7 @@ end
 
 ---@param docset table
 function M.pick_entry(docset)
-	entry_picker(docsets.entries(docset), docset.name, query)
+	entry_picker(docsets.entries(docset), docset.name)
 end
 
 ---@param docset_names table[]
