@@ -62,6 +62,11 @@ Default options:
     -- see https://github.com/folke/snacks.nvim/blob/main/docs/picker.md
 	snacks = {
 	  layout = "default",
+	  manager_keymaps = {
+	    toggle = "<C-t>",  -- toggle between download/remove mode
+	    select = "<Tab>",  -- multi-select an item
+	    confirm = "<CR>",  -- confirm selection
+	  },
 	},
   },
   ft_map = {}
@@ -151,7 +156,7 @@ Opens a picker to select and remove an installed docset.
 
 ### `:ZealManager`
 
-Opens a combined manager UI for downloading and removing docsets. Supports multi-select — use `<Tab>` or `<Space>` to select multiple items and `<CR>` to confirm. Toggle between download and remove modes with `<C-t>`.
+Opens a combined manager UI for downloading and removing docsets. Supports multi-select. Default keymaps: `<Tab>` to select, `<CR>` to confirm, `<C-t>` to toggle between download and remove modes. These can be customised via `picker.snacks.manager_keymaps` in your config.
 
 ## Functions
 
