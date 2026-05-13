@@ -16,6 +16,10 @@ M.default_config = {
 		type = "default",
 		snacks = {
 			layout = "default",
+			manager_keymaps = {
+				toggle = "<C-t>",
+				select = "<Tab>",
+			},
 		},
 	},
 	ft_map = {},

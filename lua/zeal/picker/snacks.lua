@@ -130,9 +130,10 @@ function M.pick_manager(languages)
 		return items
 	end
 
+	local keys_config = cfg.picker.snacks.manager_keymaps
 	local keys = {
-		["<C-t>"] = { "toggle_mode", mode = { "n", "i" }, desc = "Toggle download/remove" },
-		["<Tab>"] = { "select", mode = { "n", "i" }, desc = "Select" },
+		[keys_config.toggle] = { "toggle_mode", mode = { "n", "i" }, desc = "Toggle download/remove" },
+		[keys_config.select] = { "select", mode = { "n", "i" }, desc = "Select" },
 		[" "] = { "select", mode = { "n", "i" }, desc = "Select" },
 	}
 
