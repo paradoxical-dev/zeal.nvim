@@ -19,6 +19,7 @@ M.default_config = {
 			manager_keymaps = {
 				toggle = "<C-t>",
 				select = "<Tab>",
+				confirm = "<CR>",
 			},
 		},
 	},

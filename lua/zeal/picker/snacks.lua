@@ -3,6 +3,36 @@ local docset = require("zeal.docsets")
 local download = require("zeal.download")
 local M = {}
 
+local function binding_label(binding)
+	if binding == " " then
+		return "<Space>"
+	end
+	return binding
+end
+
+local keymap_action_map = {
+	toggle = "toggle_mode",
+	select = "select",
+	confirm = "confirm",
+}
+local keymap_desc_map = {
+	toggle = "Toggle download/remove",
+	select = "Select",
+	confirm = "Confirm",
+}
+
+local function build_keys(keymaps)
+	local keys = {}
+	for action, binding in pairs(keymaps) do
+		local action_name = keymap_action_map[action]
+		if not action_name then
+			error("zeal.nvim: unrecognized manager keymap action: " .. tostring(action))
+		end
+		keys[binding] = { action_name, mode = { "n", "i" }, desc = keymap_desc_map[action] }
+	end
+	return keys
+end
+
 ---@param entries table
 ---@param title string
 ---@param query? string
@@ -103,8 +133,17 @@ function M.pick_manager(languages)
 	local snacks = require("snacks")
 	local mode = "download"
 
+	local keys_config = cfg.picker.snacks.manager_keymaps
 	local legend = {
-		{ "<CR> confirm  <Tab|Space> select  <C-t> toggle", "Comment" },
+		{
+			binding_label(keys_config.confirm)
+				.. " confirm  "
+				.. binding_label(keys_config.select)
+				.. " select  "
+				.. binding_label(keys_config.toggle)
+				.. " toggle",
+			"Comment",
+		},
 	}
 
 	local function is_meta(item)
@@ -145,12 +184,7 @@ function M.pick_manager(languages)
 		return items
 	end
 
-	local keys_config = cfg.picker.snacks.manager_keymaps
-	local keys = {
-		[keys_config.toggle] = { "toggle_mode", mode = { "n", "i" }, desc = "Toggle download/remove" },
-		[keys_config.select] = { "select", mode = { "n", "i" }, desc = "Select" },
-		[" "] = { "select", mode = { "n", "i" }, desc = "Select" },
-	}
+	local keys = build_keys(keys_config)
 
 	snacks.picker({
 		items = make_download_items(),
