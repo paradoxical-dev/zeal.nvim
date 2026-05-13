@@ -203,4 +203,23 @@ function M.pick_removal(cfg, callback)
 	pick_docsets(cfg, remove)
 end
 
+function M.pick_manager()
+	local cfg = require("zeal").config
+	if cfg.picker.type == "default" then
+		vim.ui.select({ "Download", "Remove" }, {}, function(choice)
+			if choice == "Download" then
+				local function download_loop()
+					M.download(download_loop)
+				end
+				download_loop()
+			elseif choice == "Remove" then
+				local function remove_loop()
+					M.remove(remove_loop)
+				end
+				remove_loop()
+			end
+		end)
+	end
+end
+
 return M

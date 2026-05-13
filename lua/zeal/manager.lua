@@ -21,4 +21,8 @@ function M.remove(callback)
 	picker.pick_removal(cfg)
 end
 
+function M.manager()
+	picker.pick_manager()
+end
+
 return M

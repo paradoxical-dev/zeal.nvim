@@ -73,6 +73,10 @@ function M.search_ft(query)
 	picker.pick_entry_for_ft(mapped, ft, M.config, query)
 end
 
+function M.manager()
+	require("zeal.manager").manager()
+end
+
 vim.api.nvim_create_user_command("Zeal", function(opts)
 	M.search(opts.args ~= "" and opts.args or nil)
 end, {
@@ -99,4 +103,9 @@ end, { desc = "Download Zeal docsets" })
 vim.api.nvim_create_user_command("ZealRemove", function()
 	require("zeal.manager").remove()
 end, { desc = "Remove Zeal docsets" })
+
+vim.api.nvim_create_user_command("ZealManager", function()
+	require("zeal").manager()
+end, { desc = "Open Zeal docset manager" })
+
 return M
