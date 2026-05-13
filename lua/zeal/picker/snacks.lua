@@ -1,4 +1,6 @@
 local browser = require("zeal.browser")
+local docset = require("zeal.docsets")
+local download = require("zeal.download")
 local M = {}
 
 ---@param entries table
@@ -85,7 +87,7 @@ function M.pick_download(languages, callback)
 		confirm = function(picker, choice)
 			picker:close()
 			if choice then
-				require("zeal.download").download_lang(choice.name)
+				download.download_lang(choice.name)
 				if callback then
 					callback(choice.name)
 				end
@@ -101,11 +103,15 @@ function M.pick_manager(languages)
 	local snacks = require("snacks")
 	local mode = "download"
 
-	local legend = { text = "<CR> confirm  <Tab|Space> select  <C-t> toggle", _legend = true }
+	local legend = { text = "<CR> confirm  <Tab|Space> select  <C-t> toggle", _kind = "legend" }
+
+	local function is_meta(item)
+		return item and item._kind ~= nil
+	end
 
 	local function make_header(m)
 		local label = "  Download  |  Remove  "
-		return { text = label, _header = true, _mode = m }
+		return { text = label, _kind = "header", _mode = m }
 	end
 
 	local function make_download_items()
@@ -118,7 +124,7 @@ function M.pick_manager(languages)
 
 	local function make_remove_items()
 		local items = { make_header("remove"), legend }
-		for _, d in ipairs(require("zeal.docsets").list(cfg)) do
+		for _, d in ipairs(docset.list(cfg)) do
 			table.insert(items, { text = d.name, name = d.name, path = d.path })
 		end
 		return items
@@ -133,7 +139,7 @@ function M.pick_manager(languages)
 	snacks.picker({
 		items = make_download_items(),
 		format = function(e)
-			if e._header then
+			if e._kind == "header" then
 				local dl_hl = e._mode == "download" and "DiagnosticWarn" or "Comment"
 				local rm_hl = e._mode == "remove" and "DiagnosticWarn" or "Comment"
 				return {
@@ -142,7 +148,7 @@ function M.pick_manager(languages)
 					{ " Remove  ", rm_hl },
 				}
 			end
-			if e._legend then
+			if e._kind == "legend" then
 				return { { e.text, "Comment" } }
 			end
 			return {
@@ -170,22 +176,25 @@ function M.pick_manager(languages)
 		focus = "list",
 		actions = {
 			select = function(picker, item)
-				if item and (item._header or item._legend) then
+				if is_meta(item) then
 					return
 				end
 				picker.list:select()
 			end,
 			confirm = function(picker, item)
-				if item and (item._header or item._legend) then
-					return
+				if is_meta(item) then
+					item = nil
 				end
 				local selected = picker:selected()
-				if #selected == 0 and item then
+				if #selected == 0 then
+					if not item then
+						return
+					end
 					selected = { item }
 				end
 				if mode == "download" then
 					for _, s in ipairs(selected) do
-						require("zeal.download").download_lang(s.name)
+						download.download_lang(s.name)
 					end
 				else
 					for _, s in ipairs(selected) do
