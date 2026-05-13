@@ -73,8 +73,25 @@ function M.search_ft(query)
 	picker.pick_entry_for_ft(mapped, ft, query)
 end
 
+--- Download a docset
+---@param callback function?
+function M.download(callback)
+	local picker = require("zeal.picker")
+	require("zeal.download").get_index(function(languages)
+		picker.pick_download(languages, callback)
+	end)
+end
+
+--- Remove a docset
+---@param callback function?
+function M.remove(callback)
+	local picker = require("zeal.picker")
+	picker.pick_removal(callback)
+end
+
 function M.manager()
-	require("zeal.manager").manager()
+	local picker = require("zeal.picker")
+	picker.pick_manager()
 end
 
 vim.api.nvim_create_user_command("Zeal", function(opts)
@@ -97,11 +114,11 @@ vim.api.nvim_create_user_command("ZealToggle", function()
 end, { desc = "Toggle Zeal term" })
 
 vim.api.nvim_create_user_command("ZealDownload", function()
-	require("zeal.manager").download()
+	require("zeal").download()
 end, { desc = "Download Zeal docsets" })
 
 vim.api.nvim_create_user_command("ZealRemove", function()
-	require("zeal.manager").remove()
+	require("zeal").remove()
 end, { desc = "Remove Zeal docsets" })
 
 vim.api.nvim_create_user_command("ZealManager", function()

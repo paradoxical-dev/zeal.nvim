@@ -63,12 +63,12 @@ function M.pick_manager()
 	vim.ui.select({ "Download", "Remove" }, {}, function(choice)
 		if choice == "Download" then
 			local function download_loop()
-				require("zeal.manager").download(download_loop)
+				require("zeal").download(download_loop)
 			end
 			download_loop()
 		elseif choice == "Remove" then
 			local function remove_loop()
-				require("zeal.manager").remove(remove_loop)
+				require("zeal").remove(remove_loop)
 			end
 			remove_loop()
 		end
