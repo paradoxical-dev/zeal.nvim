@@ -18,7 +18,7 @@ Query and open [Zeal](https://zealdocs.org/) docsets without leaving Neovim.
 
 > [!note]
 > If opting not to use snacks, the standard `vim.ui.select()` function will be used
-> 
+>
 > If this is true, a helper plugin like dressing.nvim is recommended
 
 # Installation
@@ -49,7 +49,7 @@ Default options:
   browser = { "w3m", '-o', 'display_image=FALSE' }, -- can be any terminal browser
   split = "vsplit", -- used when use_toggleterm = false
   use_toggleterm = false,
-  -- toggleterm specifc options
+  -- toggleterm specific options
   -- see https://github.com/akinsho/toggleterm.nvim/tree/main
   toggleterm = {
   	direction = "vertical",
@@ -128,7 +128,7 @@ Lazy:
 
 ### `:Zeal`
 
-Searches accross all available docsets, or a specific docset if supplied as an argument.
+Searches across all available docsets, or a specific docset if supplied as an argument.
 
 ### `:ZealToggle`
 
@@ -145,6 +145,14 @@ Opens a picker to browse and download docsets from the [Zeal docset registry](ht
 > [!note]
 > Docsets can also be downloaded from the Zeal GUI as usual — both sources are supported
 
+### `:ZealRemove`
+
+Opens a picker to select and remove an installed docset.
+
+### `:ZealManager`
+
+Opens a combined manager UI for downloading and removing docsets. Supports multi-select — use `<Tab>` or `<Space>` to select multiple items and `<CR>` to confirm. Toggle between download and remove modes with `<C-t>`.
+
 ## Functions
 
 ### `require("zeal").search(docset)`
@@ -155,7 +163,15 @@ Same as the `:Zeal` command
 
 Same as `:ZealSearchFt`
 
-### `require("zeal.download").download(cfg)`
+### `require("zeal.download").download()`
 
 Same as `:ZealDownload`
+
+### `require("zeal").remove()`
+
+Same as `:ZealRemove`
+
+### `require("zeal").manager()`
+
+Same as `:ZealManager`
 
