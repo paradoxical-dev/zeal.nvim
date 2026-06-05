@@ -17,6 +17,26 @@ function M.open(entry, cfg)
 	vim.list_extend(cmd, type(cfg.browser) == 'string' and { cfg.browser } or cfg.browser)
 	vim.list_extend(cmd, { entry.path })
 
+	if cfg.use_tmux then
+		if os.getenv("TMUX") then
+			local popup = {
+				"tmux",
+				"display-popup",
+				"-w",
+				cfg.tmux.width,
+				"-h",
+				cfg.tmux.height,
+				"-T Zeal Term (TMUX)",
+				cfg.tmux.additional_options,
+				"-E",
+			}
+			vim.list_extend(popup, cmd)
+			vim.system(popup)
+			return
+		else
+		end
+	end
+
 	if not cfg.use_toggleterm then
 		vim.cmd(cfg.split)
 		local buf = vim.api.nvim_create_buf(false, true)

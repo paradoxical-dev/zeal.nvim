@@ -38,7 +38,6 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim)
 >[!note]
 > If using lazy, `opts` must at least be an empty table
 
-
 # Configuration
 
 Default options:
@@ -48,6 +47,16 @@ Default options:
   docsets_path = vim.fn.expand("~/.local/share/Zeal/Zeal/docsets"), -- zeal docset locations
   browser = { "w3m", '-o', 'display_image=FALSE' }, -- can be any terminal browser
   split = "vsplit", -- used when use_toggleterm = false
+
+  use_tmux = false,
+  -- tmux spesific options
+  -- see https://man7.org/linux/man-pages/man1/tmux.1.html
+  tmux = {
+    width = "60%",
+    height = "60%",
+    additional_options = "-E",
+  },
+
   use_toggleterm = false,
   -- toggleterm specific options
   -- see https://github.com/akinsho/toggleterm.nvim/tree/main
@@ -79,6 +88,12 @@ Default options:
 ## `ft_map`
 
 The ft_map table allows you to map certain docset names to file types. These will be passed to the `search_ft()` function or `:ZealSearchFt` command (See Usage section)
+
+## tmux
+
+The tmux option will check the `TMUX` environment variable for any active
+session and open the browser in a popup. Can be styled extensively by passing
+regular tmux hints to the `additional_options` option.
 
 ## Example Configuration
 
