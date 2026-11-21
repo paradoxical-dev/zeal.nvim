@@ -4,6 +4,19 @@ M.default_config = {
 	docsets_path = vim.fn.expand("~/.local/share/Zeal/Zeal/docsets"), -- zeal docset locations
 	browser = { "w3m", "-o", "display_image=FALSE" }, -- can be any terminal browser
 	split = "vsplit", -- used when use_toggleterm = false
+
+	use_tmux = false,
+	-- tmux spesific options
+	-- see https://man7.org/linux/man-pages/man1/tmux.1.html
+	tmux = {
+		width = "60%",
+		height = "60%",
+
+		-- Neither "" nor nil as defaults would let the command execute properly,
+		-- however reapeating the -E option seemingly works great
+		additional_options = "-E",
+	},
+
 	use_toggleterm = false,
 	-- toggleterm specific options
 	-- see https://github.com/akinsho/toggleterm.nvim/tree/main
