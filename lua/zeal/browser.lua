@@ -14,7 +14,7 @@ function M.open(entry, cfg)
 	end
 
 	local cmd = {}
-	vim.list_extend(cmd, type(cfg.browser) == 'string' and { cfg.browser } or cfg.browser)
+	vim.list_extend(cmd, type(cfg.browser) == "string" and { cfg.browser } or cfg.browser)
 	vim.list_extend(cmd, { entry.path })
 
 	if cfg.use_tmux then
@@ -37,20 +37,47 @@ function M.open(entry, cfg)
 		end
 	end
 
+	if cfg.use_zellij then
+		local z = cfg.zellij
+		local pane = { "zellij", "run", "--close-on-exit", "--name", "Zeal Term" }
+
+		if z.mode == "float" then
+			vim.list_extend(pane, {
+				"--floating",
+				"--width",
+				z.width .. "%",
+				"--height",
+				z.height .. "%",
+				"-x",
+				math.floor((100 - z.width) / 2) .. "%",
+				"-y",
+				math.floor((100 - z.height) / 2) .. "%",
+			})
+		else
+			vim.list_extend(pane, { "--direction", z.direction })
+		end
+
+		vim.list_extend(pane, z.additional_options or {})
+		vim.list_extend(pane, { "--" })
+		vim.list_extend(pane, cmd)
+		vim.system(pane)
+		return
+	end
+
 	if not cfg.use_toggleterm then
 		vim.cmd(cfg.split)
 		local buf = vim.api.nvim_create_buf(false, true)
 		vim.api.nvim_buf_set_option(buf, "filetype", ZEAL_FILETYPE)
 		vim.api.nvim_set_current_buf(buf)
 
-		if vim.fn.has('nvim-0.11') == 1 then
+		if vim.fn.has("nvim-0.11") == 1 then
 			vim.fn.jobstart(cmd, { term = true })
 		else
 			vim.fn.termopen(cmd)
 		end
 
 		-- automatically close the terminal window unless there was an error
-		vim.api.nvim_create_autocmd('TermClose', {
+		vim.api.nvim_create_autocmd("TermClose", {
 			buffer = buf,
 			callback = function(ev)
 				if vim.v.event.status ~= 0 then
