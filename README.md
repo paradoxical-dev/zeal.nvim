@@ -57,6 +57,15 @@ Default options:
     additional_options = "-E",
   },
 
+  use_zellij = false,
+    zellij = {
+	mode = "float", -- float | split
+	direction = "right", -- right | down
+	width = 90, -- width and height only for floats
+	height = 80,
+	additional_options = {}, -- zellij flags for the window
+  },
+
   use_toggleterm = false,
   -- toggleterm specific options
   -- see https://github.com/akinsho/toggleterm.nvim/tree/main
