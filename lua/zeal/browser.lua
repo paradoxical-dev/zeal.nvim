@@ -36,7 +36,6 @@ function M.open(entry, cfg)
 
 	vim.list_extend(cmd, type(cfg.browser) == "string" and { cfg.browser } or cfg.browser)
 	vim.list_extend(cmd, { target })
-	print(vim.inspect(cmd))
 
 	if cfg.use_tmux then
 		if os.getenv("TMUX") then
