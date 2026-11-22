@@ -13,9 +13,30 @@ function M.open(entry, cfg)
 		return
 	end
 
+	--- convert docset path to file:// url according to cfg
+	--- @param path string
+	--- @return string
+	local function to_file_url(path)
+		local file, frag = path:match("^(.-)(#.*)$")
+		file = file or path
+		frag = frag or ""
+		return vim.uri_from_fname(file) .. frag
+	end
+
+	local function wants_url(cfg)
+		if cfg.file_url ~= nil then
+			return cfg.file_url
+		end
+		local bin = type(cfg.browser) == "string" and cfg.browser or cfg.browser[1]
+		return vim.fn.fnamemodify(bin, ":t") == "terminal-browser"
+	end
+
+	local target = wants_url(cfg) and to_file_url(entry.path) or entry.path
 	local cmd = {}
+
 	vim.list_extend(cmd, type(cfg.browser) == "string" and { cfg.browser } or cfg.browser)
-	vim.list_extend(cmd, { entry.path })
+	vim.list_extend(cmd, { target })
+	print(vim.inspect(cmd))
 
 	if cfg.use_tmux then
 		if os.getenv("TMUX") then

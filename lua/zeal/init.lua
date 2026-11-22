@@ -5,6 +5,10 @@ M.default_config = {
 	browser = { "w3m", "-o", "display_image=FALSE" }, -- can be any terminal browser
 	split = "vsplit", -- used when use_toggleterm = false
 
+	-- will convert paths to file:// URLs
+	-- leaving as nil will auto detect whether to or not
+	file_url = nil, -- false | true | nil
+
 	use_tmux = false,
 	-- tmux spesific options
 	-- see https://man7.org/linux/man-pages/man1/tmux.1.html
